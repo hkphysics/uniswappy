@@ -80,6 +80,15 @@ class UniswapFactory(IExchangeFactory):
         
         return exchange
 
+    def reset(self):
+
+        """ reset
+
+            Reset factory data
+        """
+        self.exchange_from_token = {}
+        self.token_from_exchange = {}
+
     def get_exchange(self, token):
         
         """ get_exchange
