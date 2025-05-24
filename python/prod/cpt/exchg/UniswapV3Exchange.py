@@ -590,7 +590,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
             cache.liquidityStart,
             [],
         )
-
+        currentSqrtPriceStartX96 = state.sqrtPriceX96
         while (
             state.amountSpecifiedRemaining != 0
             and state.sqrtPriceX96 != sqrtPriceLimitX96
@@ -654,7 +654,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
                 )
                 # Addition can overflow in Solidity - mimic it
                 state.feeGrowthGlobalX128 = toUint256(state.feeGrowthGlobalX128)
-
+                currentSqrtPriceStartX96 = state.sqrtPriceX96
             ## shift tick if we reached the next price
             if state.sqrtPriceX96 == step.sqrtPriceNextX96:
                 ## if the tick is initialized, run the tick transition
@@ -687,11 +687,11 @@ class UniswapV3Exchange(IExchange, LPERC20):
         ## End of swap loop
         ## update tick
         if state.tick != slot0Start.tick:
-            self.slot0.sqrtPriceX96 = state.sqrtPriceX96
+            self.slot0.sqrtPriceX96 = currentSqrtPriceStartX96
             self.slot0.tick = state.tick
         else:
             ## otherwise just update the price
-            self.slot0.sqrtPriceX96 = state.sqrtPriceX96
+            self.slot0.sqrtPriceX96 = currentSqrtPriceStartX96
 
         ## update liquidity if it changed
         if cache.liquidityStart != state.liquidity:
