@@ -590,11 +590,13 @@ class UniswapV3Exchange(IExchange, LPERC20):
             cache.liquidityStart,
             [],
         )
-
+        currentSqrtPriceStartX96 = state.sqrtPriceX96
         while (
             state.amountSpecifiedRemaining != 0
             and state.sqrtPriceX96 != sqrtPriceLimitX96
         ):
+            print("\n")
+            print("start", state)
             step = StepComputations(0, 0, 0, 0, 0, 0, 0)
             step.sqrtPriceStartX96 = state.sqrtPriceX96
 
@@ -602,7 +604,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
 
             ## get the price for the next tick
             step.sqrtPriceNextX96 = TickMath.getSqrtRatioAtTick(step.tickNext)
-
+            print("step0", step)
             ## compute values to swap to the target tick, price limit, or point where input#output amount is exhausted
             if zeroForOne:
                 sqrtRatioTargetX96 = (
@@ -616,7 +618,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
                     if step.sqrtPriceNextX96 > sqrtPriceLimitX96
                     else step.sqrtPriceNextX96
                 )
-
+            print("sqrtRatioTargetX96", sqrtRatioTargetX96) 
             (
                 state.sqrtPriceX96,
                 step.amountIn,
@@ -629,7 +631,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
                 state.amountSpecifiedRemaining,
                 self.fee,
             )
-
+            print("step1", step)
             if exactInput:
                 state.amountSpecifiedRemaining -= step.amountIn + step.feeAmount
                 state.amountCalculated = SafeMath.subInts(
@@ -640,7 +642,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
                 state.amountCalculated = SafeMath.addInts(
                     state.amountCalculated, step.amountIn + step.feeAmount
                 )
-
+            print("step2", state)
             ## if the protocol fee is on, calculate how much is owed, decrement feeAmount, and increment protocolFee
             if cache.feeProtocol > 0:
                 delta = abs(step.feeAmount // cache.feeProtocol)
@@ -654,7 +656,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
                 )
                 # Addition can overflow in Solidity - mimic it
                 state.feeGrowthGlobalX128 = toUint256(state.feeGrowthGlobalX128)
-
+                currentSqrtPriceStartX96 = state.sqrtPriceX96
             ## shift tick if we reached the next price
             if state.sqrtPriceX96 == step.sqrtPriceNextX96:
                 ## if the tick is initialized, run the tick transition
@@ -683,15 +685,15 @@ class UniswapV3Exchange(IExchange, LPERC20):
             elif state.sqrtPriceX96 != step.sqrtPriceStartX96:
                 ## recompute unless we're on a lower tick boundary (i.e. already transitioned ticks), and haven't moved
                 state.tick = TickMath.getTickAtSqrtRatio(state.sqrtPriceX96)
-
+            print("end", state)
         ## End of swap loop
         ## update tick
         if state.tick != slot0Start.tick:
-            self.slot0.sqrtPriceX96 = state.sqrtPriceX96
+            self.slot0.sqrtPriceX96 = currentSqrtPriceStartX96
             self.slot0.tick = state.tick
         else:
             ## otherwise just update the price
-            self.slot0.sqrtPriceX96 = state.sqrtPriceX96
+            self.slot0.sqrtPriceX96 = currentSqrtPriceStartX96
 
         ## update liquidity if it changed
         if cache.liquidityStart != state.liquidity:
