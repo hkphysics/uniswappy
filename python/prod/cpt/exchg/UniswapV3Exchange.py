@@ -599,6 +599,8 @@ class UniswapV3Exchange(IExchange, LPERC20):
             step.sqrtPriceStartX96 = state.sqrtPriceX96
 
             (step.tickNext, step.initialized) = self.nextTick(state.tick, zeroForOne)
+            if not step.initialized:
+                break
 
             ## get the price for the next tick
             step.sqrtPriceNextX96 = TickMath.getSqrtRatioAtTick(step.tickNext)
