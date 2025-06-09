@@ -151,7 +151,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
             print(f"Real Reserves:   {self.token0} = {res0}, {self.token1} = {res1}")
             print(f"Gross Liquidity: {UniV3Helper().gwei2dec(self.total_supply)} \n")            
 
-    def initialize(self, sqrtPriceX96):
+    def initialize(self, sqrtPriceX96: float):
 
         """ initialize
 
@@ -174,7 +174,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
             0,
         )
     
-    def mint(self, recipient, tickLower, tickUpper, amount): 
+    def mint(self, recipient: str, tickLower: int, tickUpper: int, amount: int) -> tuple[float, float]: 
 
         """ mint
 
@@ -974,7 +974,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
                 checkInt128(-amount)
                 return self.swap(recipient, False, -amount, sqrtPriceLimitX96)      
     
-    def _swap_tokens(self, amountA_out, amountB_out, to_addr):
+    def _swap_tokens(self, amountA_out: float, amountB_out: float, to_addr: str) -> None:
         
         """ _swap_tokens
 
@@ -1011,7 +1011,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
     
 
 
-    def _update(self, balanceA, balanceB):
+    def _update(self, balanceA: float, balanceB: float) -> None:
         
         """ _update
 

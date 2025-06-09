@@ -13,6 +13,7 @@ setup(name='UniswapPy',
       author_email = "defipy.devs@gmail.com",
       license='MIT',
       package_dir = {"uniswappy": "python/prod"},
+      package_data = {"uniswappy": ["python/prod/py.typed"]},
       packages=[
           'uniswappy',
           'uniswappy.cpt.exchg',
