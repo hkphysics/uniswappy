@@ -47,7 +47,7 @@ class UniswapExchange(IExchange, LPERC20):
         self.last_liquidity_deposit = 0
         self.total_supply = 0
 
-    def summary(self):
+    def summary(self) -> None:
 
         """ summary
             Summary print-out of exchange, reserves and liquidity               
@@ -61,7 +61,8 @@ class UniswapExchange(IExchange, LPERC20):
         print(f"Reserves: {self.token0} = {reserve0}, {self.token1} = {reserve1}")
         print(f"Liquidity: {total_supply} \n")    
 
-    def add_liquidity(self, _from_addr, amountADesired, amountBDesired, amountAMin, amountBMin):
+    def add_liquidity(self, _from_addr: str, amountADesired: float, amountBDesired: float,
+                      amountAMin: float, amountBMin: float) -> tuple[float, float]:
         
         """ add_liquidity
 
@@ -96,7 +97,10 @@ class UniswapExchange(IExchange, LPERC20):
         self.mint(_from_addr, amountA, amountB)
         return amountA, amountB
 
-    def _add_liquidity(self, amountADesired, amountBDesired, amountAMin, amountBMin):
+    def _add_liquidity(
+            self, amountADesired: float, amountBDesired: float,
+            amountAMin: float, amountBMin: float
+    ) -> tuple[float, float]:
         
         """ _add_liquidity
 
@@ -142,7 +146,7 @@ class UniswapExchange(IExchange, LPERC20):
 
         return amountA, amountB   
 
-    def get_amounts(self, to_addr, liquidity):
+    def get_amounts(self, to_addr: str, liquidity: float) -> tuple[float, float]:
         
         """ get_amounts
 
@@ -177,7 +181,10 @@ class UniswapExchange(IExchange, LPERC20):
         
         return amountA, amountB    
     
-    def remove_liquidity(self, to_addr, liquidity, amountAMin, amountBMin):
+    def remove_liquidity(
+            self,
+            to_addr: str, liquidity: float,
+            amountAMin: float, amountBMin: float) -> tuple[float, float]:
         
         """ remove_liquidity
 
@@ -313,7 +320,7 @@ class UniswapExchange(IExchange, LPERC20):
         self.liquidity_providers[to_addr] = available_liquidity - value
         self.total_supply -= value
 
-    def mint(self, to_addr, _amountA, _amountB):
+    def mint(self, to_addr: str, _amountA: float, _amountB: float) -> None:
         
         """ mint
 

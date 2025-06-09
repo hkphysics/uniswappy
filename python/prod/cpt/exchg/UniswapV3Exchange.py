@@ -112,8 +112,6 @@ class UniswapV3Exchange(IExchange, LPERC20):
         self.reserve0 = 0             
         self.reserve1 = 0 
         self.fee = exchg_struct.fee
-        self.fee0_arr = []
-        self.fee1_arr = []
         self.aggr_fee0 = 0
         self.aggr_fee1 = 0
         self.collected_fee0 = 0
@@ -151,7 +149,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
             print(f"Real Reserves:   {self.token0} = {res0}, {self.token1} = {res1}")
             print(f"Gross Liquidity: {UniV3Helper().gwei2dec(self.total_supply)} \n")            
 
-    def initialize(self, sqrtPriceX96: float):
+    def initialize(self, sqrtPriceX96: int):
 
         """ initialize
 
@@ -159,7 +157,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
                 
             Parameters
             -----------------
-            sqrtPriceX96 : float
+            sqrtPriceX96 : int
                 the initial sqrt price of the pool as a Q64.96                     
         """  
         
@@ -1011,7 +1009,7 @@ class UniswapV3Exchange(IExchange, LPERC20):
     
 
 
-    def _update(self, balanceA: float, balanceB: float) -> None:
+    def _update(self, balanceA: int, balanceB: int) -> None:
         
         """ _update
 
@@ -1019,9 +1017,9 @@ class UniswapV3Exchange(IExchange, LPERC20):
                 
             Parameters
             -----------------   
-            balanceA : float
+            balanceA : int
                 New reserve amount of A      
-            balance1 : float
+            balance1 : int
                 New reserve amount of B                   
         """         
         

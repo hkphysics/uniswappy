@@ -7,7 +7,7 @@ from abc import *
 class IExchange(ABC):
     
     @abstractmethod        
-    def summary(self, agents):
+    def summary(self, agents) -> None:
         pass
     
     @abstractmethod        
