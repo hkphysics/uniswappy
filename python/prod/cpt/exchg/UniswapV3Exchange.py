@@ -128,7 +128,8 @@ class UniswapV3Exchange(IExchange, LPERC20):
         self.feeGrowthGlobal1X128 = 0  
         self.protocolFees = ProtocolFees(0, 0)
         self.tickSpacing = exchg_struct.tick_spacing
-        self.maxLiquidityPerTick = Tick.tickSpacingToMaxLiquidityPerTick(self.tickSpacing)      
+        self.maxLiquidityPerTick = Tick.tickSpacingToMaxLiquidityPerTick(self.tickSpacing)
+        self.positions_for_owner = {}
 
     def summary(self):
 
@@ -1137,6 +1138,15 @@ class UniswapV3Exchange(IExchange, LPERC20):
             position, liquidityDelta, feeGrowthInside0X128, feeGrowthInside1X128
         )
 
+        if position != PositionInfo(0, 0, 0, 0, 0):
+            self.positions_for_owner = self.positions_for_owner.get(owner, set()).add(
+                (tickLower, tickUpper)
+            )
+        else:
+            set.positions_for_owner = self.positions_for_owner.get(owner, set()).discard(
+                (tickLower, tickUpper)
+            )
+
         ## clear any tick data that is no longer needed
         if liquidityDelta < 0:
             if flippedLower:
@@ -1144,4 +1154,11 @@ class UniswapV3Exchange(IExchange, LPERC20):
             if flippedUpper:
                 Tick.clear(self.ticks, tickUpper)
         return position    
-    
+
+    def get_owners(self):
+        [ k for k in self.positions_for_owner ]
+
+    def get_positions_for_owner(self, owner):
+        [(ticks[0], ticks[1], Positions.get(
+            self.positions, owner, ticks[0], ticks[1]
+        )) for ticks in self.positions_for_owner.get(owner, set())]
